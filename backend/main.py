@@ -6,7 +6,7 @@ from pyluach import dates
 from astral import LocationInfo, Observer
 from astral.sun import sun
 import datetime
-import hashlib  # <--- הוספנו עבור המזהה הייחודי
+import hashlib
 from ics import Calendar, Event
 from fastapi.staticfiles import StaticFiles
 import os
@@ -101,13 +101,12 @@ def _create_calendar_internal(req: EventRequest) -> str:
 			target_heb_month = req.heb_month
 
 	cal = Calendar()
-	cal.creator = "Calculender App"  # עוזר לגוגל לזהות את המקור
+	cal.creator = "Calculender App"
 
 	city_data = CITIES.get(req.location, CITIES["Jerusalem"])
 	city_info = city_data["info"]
 	obs = Observer(latitude=city_info.latitude, longitude=city_info.longitude, elevation=city_data["elevation"])
 
-	# יצירת מזהה קבוע לשם האירוע כדי שיישאר זהה גם ברענונים עתידיים
 	title_hash = hashlib.md5(req.title.encode('utf-8')).hexdigest()[:8]
 
 	for i in range(100):
@@ -142,7 +141,6 @@ def _create_calendar_internal(req: EventRequest) -> str:
 		e_all.name = req.title
 		e_all.begin = end_date_py
 		e_all.make_all_day()
-		# הגדרת UID קבוע (חובה כדי שגוגל לא ישכפל אירועים!)
 		e_all.uid = f"allday-{current_heb_year}-{calc_month}-{target_heb_day}-{title_hash}@calculender.app"
 		cal.events.add(e_all)
 
@@ -154,13 +152,22 @@ def _create_calendar_internal(req: EventRequest) -> str:
 				e_sun.name = f"תחילת {req.title}"
 				e_sun.begin = start_sunset
 				e_sun.end = start_sunset + datetime.timedelta(minutes=15)
-				# הגדרת UID קבוע גם לאירוע השקיעה
 				e_sun.uid = f"sunset-{current_heb_year}-{calc_month}-{target_heb_day}-{title_hash}@calculender.app"
 				cal.events.add(e_sun)
 			except:
 				pass
 
-	return cal.serialize()
+	# --- הזרקת השם ליומן (X-WR-CALNAME) ---
+	ics_content = cal.serialize()
+	safe_title = req.title.replace('\n', ' ').replace('\r', '')
+	name_tag = f"X-WR-CALNAME:{safe_title}"
+
+	if "VERSION:2.0\r\n" in ics_content:
+		ics_content = ics_content.replace("VERSION:2.0\r\n", f"VERSION:2.0\r\n{name_tag}\r\n", 1)
+	elif "VERSION:2.0\n" in ics_content:
+		ics_content = ics_content.replace("VERSION:2.0\n", f"VERSION:2.0\n{name_tag}\n", 1)
+
+	return ics_content
 
 
 # --- Endpoints ---
@@ -196,7 +203,6 @@ def generate_ics_subscribe(
 	)
 	ics_content = _create_calendar_internal(req)
 
-	# הוספת כותרות שמונעות מהדפדפן לשמור עותק ישן (Caching)
 	headers = {
 		"Cache-Control": "no-cache, no-store, must-revalidate",
 		"Pragma": "no-cache",
@@ -205,7 +211,6 @@ def generate_ics_subscribe(
 	return Response(content=ics_content, media_type="text/calendar", headers=headers)
 
 
-# --- Endpoint חדש למניעת הירדמות של השרת ---
 @app.get("/api/ping")
 def ping_server():
 	return {"status": "alive", "message": "Calculender server is awake!"}
