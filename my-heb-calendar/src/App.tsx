@@ -214,7 +214,7 @@ const App: React.FC = () => {
             checked={createSunsetEvent}
             onChange={e => setCreateSunsetEvent(e.target.checked)}
           />
-          ליצור אירוע (של רבע שעה) בזמן השקיעה בערב?
+          ליצור אירוע (של רבע שעה) להצגת זמן השקיעה בערב? (שעת השקיעה מחושבת אוטומטית לפי המיקום שבחרת)
         </label>
         <p style={{fontSize: '12px', color: '#7f8c8d', marginTop: '5px'}}>
           * אירוע יומי (ללא שעות) ייווצר תמיד ביום למחרת כדי לא לחסום לך את היומן.
@@ -226,7 +226,7 @@ const App: React.FC = () => {
         onClick={handleDownload}
         disabled={loading || !title}
       >
-        {loading ? 'מייצר קובץ ל-100 שנים...' : '⬇️ הורד קובץ יומן'}
+        {loading ? 'מייצר קובץ ל-100 שנים...' : '⬇️ הורד קובץ אירועים ל100 שנה קדימה'}
       </button>
       {/* --- התוספת החדשה: קישור ל-GitHub --- */}
       <div className="github-link">
