@@ -255,6 +255,14 @@ const App: React.FC = () => {
           {loading ? 'מייצר קובץ...' : '⬇️ הורד קובץ יומן (.ICS)'}
         </button>
 
+        {downloadComplete && (
+          <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#e8f4fd', border: '1px solid #b6d4fe', borderRadius: '8px', textAlign: 'center' }}>
+            <h4 style={{ margin: '0 0 10px 0', color: '#084298' }}>✅ הקובץ ירד בהצלחה!</h4>
+            <p style={{ margin: 0, fontSize: '14px', color: '#052c65' }}>
+              לייבוא: <a href="https://calendar.google.com/calendar/r/settings/export" target="_blank" rel="noreferrer" style={{ fontWeight: 'bold', textDecoration: 'underline' }}>לחץ כאן</a>, העלה את הקובץ ולחץ על "ייבוא".
+            </p>
+          </div>
+        )}
 
         <button
           className="submit-btn"
@@ -285,14 +293,6 @@ const App: React.FC = () => {
         </button>
       </div>
 
-      {downloadComplete && (
-        <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#e8f4fd', border: '1px solid #b6d4fe', borderRadius: '8px', textAlign: 'center' }}>
-          <h4 style={{ margin: '0 0 10px 0', color: '#084298' }}>✅ הקובץ ירד בהצלחה!</h4>
-          <p style={{ margin: 0, fontSize: '14px', color: '#052c65' }}>
-            לייבוא: <a href="https://calendar.google.com/calendar/r/settings/export" target="_blank" rel="noreferrer" style={{ fontWeight: 'bold', textDecoration: 'underline' }}>לחץ כאן</a>, העלה את הקובץ ולחץ על "ייבוא".
-          </p>
-        </div>
-      )}
 
       {copySuccess && (
         <p style={{ fontSize: '13px', color: '#4338ca', textAlign: 'center', marginTop: '10px', backgroundColor: '#eef2ff', padding: '10px', borderRadius: '6px', border: '1px solid #c7d2fe' }}>
