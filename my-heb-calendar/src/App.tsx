@@ -248,7 +248,7 @@ const App: React.FC = () => {
           onClick={() => window.location.href = buildSubscriptionUrl('webcal')}
           disabled={!title || loading}
         >
-          🔗 סנכרן ליומן (מומלץ לאייפון/מק)
+          🔗 סנכרן ליומן (מומלץ)
         </button>
 
         <button
@@ -257,7 +257,7 @@ const App: React.FC = () => {
           onClick={handleCopyLink}
           disabled={!title || loading}
         >
-          {copySuccess ? '✅ הלינק הועתק!' : '📋 העתק לינק לסנכרון (לגוגל קלנדר)'}
+          {copySuccess ? '✅ הלינק הועתק!' : '📋 העתק לינק לסנכרון'}
         </button>
       </div>
 
