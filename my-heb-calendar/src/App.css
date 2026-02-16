@@ -179,3 +179,27 @@ select:focus {
     padding: 16px;
   }
 }
+
+/* עיצוב הקישור לגיטהאב */
+.github-link {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.github-link a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  transition: color 0.2s ease, transform 0.2s ease;
+  direction: ltr; /* שומר על האייקון בצד הנכון */
+}
+
+.github-link a:hover {
+  color: var(--text-dark);
+  transform: translateY(-1px);
+}
