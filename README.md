@@ -28,3 +28,11 @@
 
 **תשתית (DevOps):**
 * Docker (Multi-stage build)
+
+**פריסה (Deployment)**
+הפרויקט בנוי ומוכן לפריסה חינמית בפלטפורמת Render.com.
+ה-Dockerfile מכיל כבר את כל השלבים הדרושים: בניית קבצי ה-React (בעזרת Node.js), התקנת שרת הפייתון, והגשת קבצי הממשק הסטטיים דרך FastAPI באותו הפורט.
+
+
+לכניסה לכלי לחצו: 
+https://calculender.onrender.com
