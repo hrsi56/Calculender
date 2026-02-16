@@ -46,6 +46,7 @@ const App: React.FC = () => {
   const [title, setTitle] = useState<string>('');
   const [createSunsetEvent, setCreateSunsetEvent] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
+  const [downloadComplete, setDownloadComplete] = useState<boolean>(false);
 
   const handleDownload = async () => {
     setLoading(true);
@@ -97,6 +98,7 @@ const App: React.FC = () => {
       document.body.appendChild(a);
       a.click();
       a.remove();
+      setDownloadComplete(true);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       alert("הייתה בעיה ביצירת הקובץ. ודא ששרת הפייתון פועל.");
@@ -228,6 +230,40 @@ const App: React.FC = () => {
       >
         {loading ? 'מייצר קובץ ל-100 שנים...' : '⬇️ הורד קובץ אירועים ל100 שנה קדימה'}
       </button>
+      {/* --- חדש: חלונית הדרכה שקופצת אחרי ההורדה --- */}
+            {downloadComplete && (
+              <div style={{
+                marginTop: '20px',
+                padding: '15px',
+                backgroundColor: '#e8f4fd',
+                border: '1px solid #b6d4fe',
+                borderRadius: '8px',
+                textAlign: 'center'
+              }}>
+                <h4 style={{ margin: '0 0 10px 0', color: '#084298' }}>✅ הקובץ ירד בהצלחה!</h4>
+                <p style={{ margin: '0 0 15px 0', fontSize: '14px', color: '#052c65' }}>
+                  כדי להוסיף את האירועים ל-Google Calendar, לחץ על הכפתור למטה, בחר את הקובץ שהרגע הורדת, ולחץ על "ייבוא".
+                </p>
+                <a
+                  href="https://calendar.google.com/calendar/r/settings/export"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-block',
+                    padding: '8px 16px',
+                    backgroundColor: '#ffffff',
+                    color: '#0d6efd',
+                    textDecoration: 'none',
+                    borderRadius: '6px',
+                    fontWeight: 'bold',
+                    border: '1px solid #0d6efd',
+                    transition: 'background-color 0.2s'
+                  }}
+                >
+                  🗓️ פתח את עמוד הייבוא בגוגל קלנדר
+                </a>
+              </div>
+            )}
       {/* --- התוספת החדשה: קישור ל-GitHub --- */}
       <div className="github-link">
         <a href="https://github.com/hrsi56/Calculender" target="_blank" rel="noopener noreferrer">
