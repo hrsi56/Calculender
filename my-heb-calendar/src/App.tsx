@@ -43,17 +43,22 @@ const App: React.FC = () => {
   const [downloadComplete, setDownloadComplete] = useState<boolean>(false);
   const [copySuccess, setCopySuccess] = useState<boolean>(false);
 
-  const handleGoogleSync = () => {
-    // הלינק המלא לשרת שלך (חייב להתחיל ב-https עבור גוגל)
-    const subscribeUrl = buildSubscriptionUrl('https');
+  // זיהוי מכשירי אפל
+  const isIOS = /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent);
 
-    // לינק הקסם של גוגל שמבצע "ייבוא דרך URL" בלחיצה אחת
-    const googleMagicLink = `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(subscribeUrl)}`;
-
-    window.open(googleMagicLink, '_blank');
+  // פונקציית בדיקת תקינות (כדי לא לשלוח לינקים ריקים)
+  const validateForm = () => {
+    if (!isHebrew && !gregDate) {
+      alert('אנא בחר תאריך לועזי לפני יצירת היומן');
+      return false;
+    }
+    if (isHebrew && !hebDay) {
+      alert('אנא הזן יום עברי (מספר) לפני יצירת היומן');
+      return false;
+    }
+    return true;
   };
 
-  // פונקציית עזר לבניית ה-URL עבור סנכרון (Subscription)
   const buildSubscriptionUrl = (protocol: 'https' | 'webcal') => {
     const baseUrl = window.location.origin.replace(/^https?:\/\//, '');
     const url = new URL(`${window.location.protocol}//${baseUrl}/api/subscribe.ics`);
@@ -79,21 +84,40 @@ const App: React.FC = () => {
       : url.toString();
   };
 
+  const handleGoogleSync = () => {
+    if (!validateForm()) return; // עוצר אם חסרים פרטים
+
+    // גוגל קלנדר הרבה פעמים עובד חלק יותר כשהוא מקבל webcal בתוך הפרמטר
+    const subscribeUrl = buildSubscriptionUrl('webcal');
+    const googleMagicLink = `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(subscribeUrl)}`;
+
+    window.open(googleMagicLink, '_blank');
+  };
+
+  const handleAppleSync = () => {
+    if (!validateForm()) return;
+    window.location.href = buildSubscriptionUrl('webcal');
+  };
+
   const handleCopyLink = async () => {
+    if (!validateForm()) return;
     const url = buildSubscriptionUrl('https');
     try {
       await navigator.clipboard.writeText(url);
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 3000);
     } catch (err) {
-      alert("נכשלה העתקת הלינק");
+      alert("נכשלה העתקת הלינק. נסה שוב.");
     }
   };
 
   const handleDownload = async () => {
+    if (!validateForm()) return;
+
     setLoading(true);
     const API_URL = "/api/generate-ics";
 
+    // בונים את ה-Payload כמו קודם...
     const payload: EventPayload = {
       is_hebrew: isHebrew,
       greg_year: null, greg_month: null, greg_day: null,
@@ -104,21 +128,11 @@ const App: React.FC = () => {
     };
 
     if (!isHebrew) {
-      if (!gregDate) {
-        alert('אנא בחר תאריך לועזי');
-        setLoading(false);
-        return;
-      }
       const [year, month, day] = gregDate.split('-');
       payload.greg_year = parseInt(year);
       payload.greg_month = parseInt(month);
       payload.greg_day = parseInt(day);
     } else {
-      if (!hebDay) {
-        alert('אנא הזן יום עברי');
-        setLoading(false);
-        return;
-      }
       payload.heb_month = parseInt(hebMonth);
       payload.heb_day = parseInt(hebDay);
     }
@@ -240,26 +254,28 @@ const App: React.FC = () => {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <button className="submit-btn" onClick={handleDownload} disabled={loading || !title}>
-          {loading ? 'מייצר קובץ...' : '⬇️ הורד קובץ אירועים (ICS) ויבא ידנית'}
+          {loading ? 'מייצר קובץ...' : '⬇️ הורד קובץ יומן (.ICS)'}
         </button>
 
-        {downloadComplete && (
-          <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#e8f4fd', border: '1px solid #b6d4fe', borderRadius: '8px', textAlign: 'center' }}>
-            <h4 style={{ margin: '0 0 10px 0', color: '#084298' }}>✅ הקובץ ירד בהצלחה!</h4>
-            <p style={{ margin: 0, fontSize: '14px', color: '#052c65' }}>
-              לייבוא לגוגל: <a href="https://calendar.google.com/calendar/r/settings/export" target="_blank" rel="noreferrer" style={{ fontWeight: 'bold', textDecoration: 'underline' }}>לחץ כאן</a>, בחר את הקובץ ולחץ על "ייבוא".
-            </p>
-          </div>
+        {isIOS ? (
+          <button
+            className="submit-btn"
+            style={{ backgroundColor: '#10b981', marginTop: 0 }}
+            onClick={handleAppleSync}
+            disabled={!title || loading}
+          >
+            🍏 סנכרן ישירות ליומן האייפון/מק
+          </button>
+        ) : (
+          <button
+            className="submit-btn"
+            style={{ backgroundColor: '#4285F4', marginTop: 0 }}
+            onClick={handleGoogleSync}
+            disabled={!title || loading}
+          >
+            💙 סנכרן לגוגל קלנדר
+          </button>
         )}
-
-        <button
-          className="submit-btn"
-          style={{ backgroundColor: '#4285F4', marginTop: 0 }} // הצבע הכחול של גוגל
-          onClick={handleGoogleSync}
-          disabled={!title || loading}
-        >
-          💙 סנכרן לגוגל קלנדר (אנדרואיד/Web)
-        </button>
 
         <button
           className="submit-btn"
@@ -267,10 +283,18 @@ const App: React.FC = () => {
           onClick={handleCopyLink}
           disabled={!title || loading}
         >
-          {copySuccess ? '✅ הלינק הועתק!' : '📋 העתק לינק לסנכרון'}
+          {copySuccess ? '✅ הלינק הועתק!' : '📋 העתק לינק לסנכרון ידני'}
         </button>
       </div>
 
+      {downloadComplete && (
+        <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#e8f4fd', border: '1px solid #b6d4fe', borderRadius: '8px', textAlign: 'center' }}>
+          <h4 style={{ margin: '0 0 10px 0', color: '#084298' }}>✅ הקובץ ירד בהצלחה!</h4>
+          <p style={{ margin: 0, fontSize: '14px', color: '#052c65' }}>
+            לייבוא: <a href="https://calendar.google.com/calendar/r/settings/export" target="_blank" rel="noreferrer" style={{ fontWeight: 'bold', textDecoration: 'underline' }}>לחץ כאן</a>, העלה את הקובץ ולחץ על "ייבוא".
+          </p>
+        </div>
+      )}
 
       {copySuccess && (
         <p style={{ fontSize: '13px', color: '#4338ca', textAlign: 'center', marginTop: '10px', backgroundColor: '#eef2ff', padding: '10px', borderRadius: '6px', border: '1px solid #c7d2fe' }}>

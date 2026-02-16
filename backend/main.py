@@ -6,6 +6,7 @@ from pyluach import dates
 from astral import LocationInfo, Observer
 from astral.sun import sun
 import datetime
+import hashlib  # <--- הוספנו עבור המזהה הייחודי
 from ics import Calendar, Event
 from fastapi.staticfiles import StaticFiles
 import os
@@ -100,9 +101,14 @@ def _create_calendar_internal(req: EventRequest) -> str:
 			target_heb_month = req.heb_month
 
 	cal = Calendar()
+	cal.creator = "Calculender App"  # עוזר לגוגל לזהות את המקור
+
 	city_data = CITIES.get(req.location, CITIES["Jerusalem"])
 	city_info = city_data["info"]
 	obs = Observer(latitude=city_info.latitude, longitude=city_info.longitude, elevation=city_data["elevation"])
+
+	# יצירת מזהה קבוע לשם האירוע כדי שיישאר זהה גם ברענונים עתידיים
+	title_hash = hashlib.md5(req.title.encode('utf-8')).hexdigest()[:8]
 
 	for i in range(100):
 		current_heb_year = start_heb_year + i
@@ -136,6 +142,8 @@ def _create_calendar_internal(req: EventRequest) -> str:
 		e_all.name = req.title
 		e_all.begin = end_date_py
 		e_all.make_all_day()
+		# הגדרת UID קבוע (חובה כדי שגוגל לא ישכפל אירועים!)
+		e_all.uid = f"allday-{current_heb_year}-{calc_month}-{target_heb_day}-{title_hash}@calculender.app"
 		cal.events.add(e_all)
 
 		if req.create_sunset_event:
@@ -146,6 +154,8 @@ def _create_calendar_internal(req: EventRequest) -> str:
 				e_sun.name = f"תחילת {req.title}"
 				e_sun.begin = start_sunset
 				e_sun.end = start_sunset + datetime.timedelta(minutes=15)
+				# הגדרת UID קבוע גם לאירוע השקיעה
+				e_sun.uid = f"sunset-{current_heb_year}-{calc_month}-{target_heb_day}-{title_hash}@calculender.app"
 				cal.events.add(e_sun)
 			except:
 				pass
@@ -185,7 +195,20 @@ def generate_ics_subscribe(
 		after_sunset=after_sunset, create_sunset_event=create_sunset_event
 	)
 	ics_content = _create_calendar_internal(req)
-	return Response(content=ics_content, media_type="text/calendar")
+
+	# הוספת כותרות שמונעות מהדפדפן לשמור עותק ישן (Caching)
+	headers = {
+		"Cache-Control": "no-cache, no-store, must-revalidate",
+		"Pragma": "no-cache",
+		"Expires": "0"
+	}
+	return Response(content=ics_content, media_type="text/calendar", headers=headers)
+
+
+# --- Endpoint חדש למניעת הירדמות של השרת ---
+@app.get("/api/ping")
+def ping_server():
+	return {"status": "alive", "message": "Calculender server is awake!"}
 
 
 # הגשת React
