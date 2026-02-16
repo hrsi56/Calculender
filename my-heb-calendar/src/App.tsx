@@ -46,7 +46,7 @@ const App: React.FC = () => {
 
   const handleDownload = async () => {
     setLoading(true);
-    const API_URL = "http://localhost:8000/api/generate-ics";
+    const API_URL = "/api/generate-ics";
 
     const payload: EventPayload = {
       is_hebrew: isHebrew,
@@ -149,15 +149,51 @@ const App: React.FC = () => {
         )}
       </div>
 
-      {/* אלמנט 2: מיקום גיאוגרפי (נשאר ללא שינוי) */}
-      <div className="form-group">
-        <h3>2. מיקום לחישוב זמני שקיעה</h3>
-        <select value={location} onChange={(e) => setLocation(e.target.value)}>
-          <option value="Israel">ישראל (ירושלים / תל אביב)</option>
-          <option value="New York">ניו יורק, ארה"ב</option>
-          <option value="London">לונדון, אנגליה</option>
-        </select>
-      </div>
+      {/* אלמנט 2: מיקום גיאוגרפי */}
+            <div className="form-group">
+              <h3>2. מיקום לחישוב זמני שקיעה</h3>
+              <select value={location} onChange={(e) => setLocation(e.target.value)}>
+                <optgroup label="ישראל">
+                  <option value="Jerusalem">ירושלים</option>
+                  <option value="Tel Aviv">תל אביב - יפו</option>
+                  <option value="Haifa">חיפה</option>
+                  <option value="Rishon LeZion">ראשון לציון</option>
+                  <option value="Petah Tikva">פתח תקווה</option>
+                  <option value="Ashdod">אשדוד</option>
+                  <option value="Netanya">נתניה</option>
+                  <option value="Beersheba">באר שבע</option>
+                  <option value="Bnei Brak">בני ברק</option>
+                  <option value="Holon">חולון</option>
+                  <option value="Ramat Gan">רמת גן</option>
+                  <option value="Rehovot">רחובות</option>
+                  <option value="Ashkelon">אשקלון</option>
+                  <option value="Modiin">מודיעין</option>
+                  <option value="Beit Shemesh">בית שמש</option>
+                  <option value="Tiberias">טבריה</option>
+                  <option value="Safed">צפת</option>
+                  <option value="Eilat">אילת</option>
+                  <option value="Kfar Saba">כפר סבא</option>
+                  <option value="Ra'anana">רעננה</option>
+                </optgroup>
+                <optgroup label="מסביב לעולם">
+                  <option value="New York">ניו יורק (USA)</option>
+                  <option value="Los Angeles">לוס אנג'לס (USA)</option>
+                  <option value="Miami">מיאמי (USA)</option>
+                  <option value="Chicago">שיקגו (USA)</option>
+                  <option value="London">לונדון (UK)</option>
+                  <option value="Paris">פריז (France)</option>
+                  <option value="Antwerp">אנטוורפן (Belgium)</option>
+                  <option value="Buenos Aires">בואנוס איירס (Argentina)</option>
+                  <option value="Toronto">טורונטו (Canada)</option>
+                  <option value="Montreal">מונטריאול (Canada)</option>
+                  <option value="Moscow">מוסקבה (Russia)</option>
+                  <option value="Melbourne">מלבורן (Australia)</option>
+                  <option value="Sydney">סידני (Australia)</option>
+                  <option value="Johannesburg">יוהנסבורג (South Africa)</option>
+                  <option value="Sao Paulo">סאו פאולו (Brazil)</option>
+                </optgroup>
+              </select>
+            </div>
 
       {/* אלמנט 3: כותרת האירוע (נשאר ללא שינוי) */}
       <div className="form-group">
