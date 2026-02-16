@@ -43,8 +43,6 @@ const App: React.FC = () => {
   const [downloadComplete, setDownloadComplete] = useState<boolean>(false);
   const [copySuccess, setCopySuccess] = useState<boolean>(false);
 
-  // זיהוי מכשירי אפל
-  const isIOS = /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent);
 
   // פונקציית בדיקת תקינות (כדי לא לשלוח לינקים ריקים)
   const validateForm = () => {
@@ -257,25 +255,25 @@ const App: React.FC = () => {
           {loading ? 'מייצר קובץ...' : '⬇️ הורד קובץ יומן (.ICS)'}
         </button>
 
-        {isIOS ? (
-          <button
-            className="submit-btn"
-            style={{ backgroundColor: '#10b981', marginTop: 0 }}
-            onClick={handleAppleSync}
-            disabled={!title || loading}
-          >
-            🍏 סנכרן ישירות ליומן האייפון/מק
-          </button>
-        ) : (
-          <button
-            className="submit-btn"
-            style={{ backgroundColor: '#4285F4', marginTop: 0 }}
-            onClick={handleGoogleSync}
-            disabled={!title || loading}
-          >
-            💙 סנכרן לגוגל קלנדר
-          </button>
-        )}
+
+        <button
+          className="submit-btn"
+          style={{ backgroundColor: '#10b981', marginTop: 0 }}
+          onClick={handleAppleSync}
+          disabled={!title || loading}
+        >
+          🍏 סנכרן ישירות ליומן האייפון/מק
+        </button>
+
+        <button
+          className="submit-btn"
+          style={{ backgroundColor: '#4285F4', marginTop: 0 }}
+          onClick={handleGoogleSync}
+          disabled={!title || loading}
+        >
+          💙 סנכרן לגוגל קלנדר
+        </button>
+
 
         <button
           className="submit-btn"
