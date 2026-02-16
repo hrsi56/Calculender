@@ -20,7 +20,7 @@ const HEBREW_MONTHS = [
   { value: 9, name: 'כסלו' },
   { value: 10, name: 'טבת' },
   { value: 11, name: 'שבט' },
-  { value: 12, name: "אדר א' (בשנה מעוברת)" },
+  { value: 12, name: "אדר א' בשנה מעוברת" },
   { value: 13, name: "אדר (שנה רגילה) / אדר ב'" }, // <-- אדר העיקרי
   { value: 1, name: 'ניסן' },
   { value: 2, name: 'אייר' },
