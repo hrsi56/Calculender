@@ -259,7 +259,8 @@ const App: React.FC = () => {
           <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#e8f4fd', border: '1px solid #b6d4fe', borderRadius: '8px', textAlign: 'center' }}>
             <h4 style={{ margin: '0 0 10px 0', color: '#084298' }}>✅ הקובץ ירד בהצלחה!</h4>
             <p style={{ margin: 0, fontSize: '14px', color: '#052c65' }}>
-              לייבוא: <a href="https://calendar.google.com/calendar/r/settings/export" target="_blank" rel="noreferrer" style={{ fontWeight: 'bold', textDecoration: 'underline' }}>לחץ כאן</a>, העלה את הקובץ ולחץ על "ייבוא".
+              לייבוא לגוגל: <a href="https://calendar.google.com/calendar/r/settings/export" target="_blank" rel="noreferrer" style={{ fontWeight: 'bold', textDecoration: 'underline' }}>לחץ כאן</a>, העלה את הקובץ ולחץ על "ייבוא".
+              לאווטלוק ios וכו, אפשר פשוט לפתוח את הקובץ וזה יעשה קסם.
             </p>
           </div>
         )}
