@@ -43,6 +43,16 @@ const App: React.FC = () => {
   const [downloadComplete, setDownloadComplete] = useState<boolean>(false);
   const [copySuccess, setCopySuccess] = useState<boolean>(false);
 
+  const handleGoogleSync = () => {
+    // הלינק המלא לשרת שלך (חייב להתחיל ב-https עבור גוגל)
+    const subscribeUrl = buildSubscriptionUrl('https');
+
+    // לינק הקסם של גוגל שמבצע "ייבוא דרך URL" בלחיצה אחת
+    const googleMagicLink = `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(subscribeUrl)}`;
+
+    window.open(googleMagicLink, '_blank');
+  };
+
   // פונקציית עזר לבניית ה-URL עבור סנכרון (Subscription)
   const buildSubscriptionUrl = (protocol: 'https' | 'webcal') => {
     const baseUrl = window.location.origin.replace(/^https?:\/\//, '');
@@ -244,11 +254,11 @@ const App: React.FC = () => {
 
         <button
           className="submit-btn"
-          style={{ backgroundColor: '#10b981', marginTop: 0 }}
-          onClick={() => window.location.href = buildSubscriptionUrl('webcal')}
+          style={{ backgroundColor: '#4285F4', marginTop: 0 }} // הצבע הכחול של גוגל
+          onClick={handleGoogleSync}
           disabled={!title || loading}
         >
-          🔗 סנכרן ליומן (מומלץ)
+          💙 סנכרן לגוגל קלנדר (אנדרואיד/Web)
         </button>
 
         <button
