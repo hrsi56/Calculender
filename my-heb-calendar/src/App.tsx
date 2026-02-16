@@ -11,7 +11,7 @@ interface EventPayload {
   heb_day: number | null;
   location: string;
   title: string;
-  create_sunset_event: boolean; // <--- חדש
+  create_sunset_event: boolean;
 }
 
 const HEBREW_MONTHS = [
@@ -20,8 +20,8 @@ const HEBREW_MONTHS = [
   { value: 9, name: 'כסלו' },
   { value: 10, name: 'טבת' },
   { value: 11, name: 'שבט' },
-  { value: 12, name: 'אדר (או אדר א\')' },
-  { value: 13, name: 'אדר ב\'' },
+  { value: 12, name: "אדר א' (בשנה מעוברת)" },
+  { value: 13, name: "אדר (שנה רגילה) / אדר ב'" }, // <-- אדר העיקרי
   { value: 1, name: 'ניסן' },
   { value: 2, name: 'אייר' },
   { value: 3, name: 'סיוון' },
@@ -34,14 +34,17 @@ const App: React.FC = () => {
   const [isHebrew, setIsHebrew] = useState<boolean>(false);
   const [gregDate, setGregDate] = useState<string>('');
   const [afterSunset, setAfterSunset] = useState<boolean>(false);
+
   const [hebDay, setHebDay] = useState<string>('');
-  const [hebMonth, setHebMonth] = useState<string>('6');
-  const [location, setLocation] = useState<string>('Israel');
+
+  // הגדרנו את חודש 13 (אדר העיקרי) כברירת המחדל
+  const [hebMonth, setHebMonth] = useState<string>('13');
+
+  // הגדרנו את ירושלים כברירת המחדל למיקום
+  const [location, setLocation] = useState<string>('Jerusalem');
+
   const [title, setTitle] = useState<string>('');
-
-  // <--- חדש: State עבור תיבת הסימון
   const [createSunsetEvent, setCreateSunsetEvent] = useState<boolean>(true);
-
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleDownload = async () => {
@@ -54,7 +57,7 @@ const App: React.FC = () => {
       heb_month: null, heb_day: null,
       after_sunset: afterSunset,
       location, title,
-      create_sunset_event: createSunsetEvent // <--- חדש: שולחים לשרת
+      create_sunset_event: createSunsetEvent
     };
 
     if (!isHebrew) {
@@ -106,7 +109,6 @@ const App: React.FC = () => {
     <div className="app-container">
       <h1>מחולל אירועים ליומן 📅</h1>
 
-      {/* אלמנט 1: בחר תאריך מקור (נשאר ללא שינוי) */}
       <div className="form-group">
         <h3>1. בחר תאריך מקור</h3>
         <select value={String(isHebrew)} onChange={(e) => setIsHebrew(e.target.value === 'true')}>
@@ -149,53 +151,51 @@ const App: React.FC = () => {
         )}
       </div>
 
-      {/* אלמנט 2: מיקום גיאוגרפי */}
-            <div className="form-group">
-              <h3>2. מיקום לחישוב זמני שקיעה</h3>
-              <select value={location} onChange={(e) => setLocation(e.target.value)}>
-                <optgroup label="ישראל">
-                  <option value="Jerusalem">ירושלים</option>
-                  <option value="Tel Aviv">תל אביב - יפו</option>
-                  <option value="Haifa">חיפה</option>
-                  <option value="Rishon LeZion">ראשון לציון</option>
-                  <option value="Petah Tikva">פתח תקווה</option>
-                  <option value="Ashdod">אשדוד</option>
-                  <option value="Netanya">נתניה</option>
-                  <option value="Beersheba">באר שבע</option>
-                  <option value="Bnei Brak">בני ברק</option>
-                  <option value="Holon">חולון</option>
-                  <option value="Ramat Gan">רמת גן</option>
-                  <option value="Rehovot">רחובות</option>
-                  <option value="Ashkelon">אשקלון</option>
-                  <option value="Modiin">מודיעין</option>
-                  <option value="Beit Shemesh">בית שמש</option>
-                  <option value="Tiberias">טבריה</option>
-                  <option value="Safed">צפת</option>
-                  <option value="Eilat">אילת</option>
-                  <option value="Kfar Saba">כפר סבא</option>
-                  <option value="Ra'anana">רעננה</option>
-                </optgroup>
-                <optgroup label="מסביב לעולם">
-                  <option value="New York">ניו יורק (USA)</option>
-                  <option value="Los Angeles">לוס אנג'לס (USA)</option>
-                  <option value="Miami">מיאמי (USA)</option>
-                  <option value="Chicago">שיקגו (USA)</option>
-                  <option value="London">לונדון (UK)</option>
-                  <option value="Paris">פריז (France)</option>
-                  <option value="Antwerp">אנטוורפן (Belgium)</option>
-                  <option value="Buenos Aires">בואנוס איירס (Argentina)</option>
-                  <option value="Toronto">טורונטו (Canada)</option>
-                  <option value="Montreal">מונטריאול (Canada)</option>
-                  <option value="Moscow">מוסקבה (Russia)</option>
-                  <option value="Melbourne">מלבורן (Australia)</option>
-                  <option value="Sydney">סידני (Australia)</option>
-                  <option value="Johannesburg">יוהנסבורג (South Africa)</option>
-                  <option value="Sao Paulo">סאו פאולו (Brazil)</option>
-                </optgroup>
-              </select>
-            </div>
+      <div className="form-group">
+        <h3>2. מיקום לחישוב זמני שקיעה</h3>
+        <select value={location} onChange={(e) => setLocation(e.target.value)}>
+          <optgroup label="ישראל">
+            <option value="Jerusalem">ירושלים</option>
+            <option value="Tel Aviv">תל אביב - יפו</option>
+            <option value="Haifa">חיפה</option>
+            <option value="Rishon LeZion">ראשון לציון</option>
+            <option value="Petah Tikva">פתח תקווה</option>
+            <option value="Ashdod">אשדוד</option>
+            <option value="Netanya">נתניה</option>
+            <option value="Beersheba">באר שבע</option>
+            <option value="Bnei Brak">בני ברק</option>
+            <option value="Holon">חולון</option>
+            <option value="Ramat Gan">רמת גן</option>
+            <option value="Rehovot">רחובות</option>
+            <option value="Ashkelon">אשקלון</option>
+            <option value="Modiin">מודיעין</option>
+            <option value="Beit Shemesh">בית שמש</option>
+            <option value="Tiberias">טבריה</option>
+            <option value="Safed">צפת</option>
+            <option value="Eilat">אילת</option>
+            <option value="Kfar Saba">כפר סבא</option>
+            <option value="Ra'anana">רעננה</option>
+          </optgroup>
+          <optgroup label="מסביב לעולם">
+            <option value="New York">ניו יורק (USA)</option>
+            <option value="Los Angeles">לוס אנג'לס (USA)</option>
+            <option value="Miami">מיאמי (USA)</option>
+            <option value="Chicago">שיקגו (USA)</option>
+            <option value="London">לונדון (UK)</option>
+            <option value="Paris">פריז (France)</option>
+            <option value="Antwerp">אנטוורפן (Belgium)</option>
+            <option value="Buenos Aires">בואנוס איירס (Argentina)</option>
+            <option value="Toronto">טורונטו (Canada)</option>
+            <option value="Montreal">מונטריאול (Canada)</option>
+            <option value="Moscow">מוסקבה (Russia)</option>
+            <option value="Melbourne">מלבורן (Australia)</option>
+            <option value="Sydney">סידני (Australia)</option>
+            <option value="Johannesburg">יוהנסבורג (South Africa)</option>
+            <option value="Sao Paulo">סאו פאולו (Brazil)</option>
+          </optgroup>
+        </select>
+      </div>
 
-      {/* אלמנט 3: כותרת האירוע (נשאר ללא שינוי) */}
       <div className="form-group">
         <h3>3. כותרת האירוע ביומן</h3>
         <input
@@ -206,7 +206,6 @@ const App: React.FC = () => {
         />
       </div>
 
-      {/* --- חדש: אלמנט 4 - הגדרות נוספות --- */}
       <div className="form-group">
         <h3>4. אפשרויות תצוגה</h3>
         <label className="checkbox-label" style={{ fontWeight: 'bold' }}>
@@ -215,14 +214,13 @@ const App: React.FC = () => {
             checked={createSunsetEvent}
             onChange={e => setCreateSunsetEvent(e.target.checked)}
           />
-          ליצור אירוע (של רבע שעה) בזמן השקיעה בערב (שעת השקיעה תחושב אוטומטית)?
+          ליצור אירוע (של רבע שעה) בזמן השקיעה בערב?
         </label>
         <p style={{fontSize: '12px', color: '#7f8c8d', marginTop: '5px'}}>
           * אירוע יומי (ללא שעות) ייווצר תמיד ביום למחרת כדי לא לחסום לך את היומן.
         </p>
       </div>
 
-      {/* כפתור הורדה */}
       <button
         className="submit-btn"
         onClick={handleDownload}
