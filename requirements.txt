@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+pyluach
+astral
+ics
+pydantic
