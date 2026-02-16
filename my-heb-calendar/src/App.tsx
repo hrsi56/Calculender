@@ -252,7 +252,7 @@ const App: React.FC = () => {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <button className="submit-btn" onClick={handleDownload} disabled={loading || !title}>
-          {loading ? 'מייצר קובץ...' : '⬇️ הורד קובץ יומן (.ICS)'}
+          {loading ? 'מייצר קובץ...' : '⬇️ הורד קובץ אירועים וייבא ידנית בקלות לכל יומן (.ICS)'}
         </button>
 
         {downloadComplete && (
